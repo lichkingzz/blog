@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="zh_cn">
+<head>
+	<meta charset="UTF-8">
+	<title>杂七杂八</title>
+	<link rel="stylesheet" href="../normalize.css">
+	<style>
+		@font-face {font-family: 'iconfont';
+		    src: url('fonts/iconfont.eot'); /* IE9*/
+		    src: url('fonts/iconfont.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+		    url('fonts/iconfont.woff') format('woff'), /* chrome、firefox */
+		    url('fonts/iconfont.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+		    url('fonts/iconfont.svg#uxiconfont') format('svg'); /* iOS 4.1- */
+		}
+		body{
+			background : url(images/bkg.jpg);
+		}
+		article{
+			max-width : 1024px;
+			margin: 10px auto;
+			background-color: rgba(111,109,133,0.4);
+			border: 2px solid rgba(111,109,133,0.7);
+			border-radius: 10px;
+			min-height: 768px;
+		}
+		section{
+			width : 246px;
+			margin: 4px;
+			float : left;
+			height : 224px;
+			line-height: 224px;
+			text-align:center;
+			border-radius: 2px;
+			background-color: rgba(111,109,133,0.7);
+		}
+		*{
+			font-size: 24px;
+		}
+		button{
+			cursor: pointer;
+		}
+		.flat_1{
+			font-weight: bold;
+			outline: none;
+			border : 1px solid;
+			border-bottom: 3px solid;
+			border-radius:  4px;
+			padding: .75em 3em;	
+		}
+		.flat_1.green{
+			color : #FFF;
+			background-color: #45b97c;
+			border-color : #45b97c;
+			border-bottom-color: #007d65;
+		}
+		.flat_1.green:active{
+			border : none;
+			border-bottom : 1px solid #45b97c;
+		}
+		.flat_1.green_inverted{
+			color : #45b97c;
+			background-color: #FFF;
+			border : 2px solid #45b97c;
+			border-bottom: 3px solid;
+		}
+		.flat_1.green_inverted:active{
+			border : 1px solid #45b97c;
+		}
+		.flat_1.orange{
+			color : #FFF;
+			background-color: #f26522;
+			border-color : #f26522;
+			border-bottom-color: #ef4136;
+		}
+		.flat_1.orange:active{
+			border : none;
+			border-bottom : 1px solid #f26522;
+		}
+
+		.flat_2{
+			height :3em;
+			width : 3em;
+			line-height: 3em;
+			border-radius: 1.5em;
+			font-weight: bold;
+			border : 0px;
+			outline: none;
+			text-align: center;
+			font-family: iconfont;
+			text-shadow : rgba(0,0,0,0.5) 5px 5px 10px;
+		}
+		.flat_2.green{
+			color : #FFF;
+			background-color: #45b97c;
+			border-bottom : 4px solid #007d65;
+		}
+		.flat_2.green:active{
+			border : none;
+		}
+		
+		.flat_3{
+			cursor: pointer;
+			border: 60px solid  #45b97c;
+			width : 0px;
+			height: 0px;
+			border-radius: 90px;
+			border-top-right-radius: 24px;
+			position: relative;
+			-webkit-user-select: none;
+			-webkit-transform: rotate(135deg);
+			transition: border-top-right-radius .5s,font-size .5s;
+			-webkit-transition: border-top-right-radius .5s,font-size .5s;
+			font-size: 50px;
+		}
+		.flat_3:hover{
+			font-size : 55px;
+			border-top-right-radius: 0px;
+		}
+		.flat_3 .mask{
+			width : 0px;
+			height: 0px;
+			border: 50px solid #FFF;
+			border-radius: 75px;
+			display: block;
+			position:absolute;
+			left : -50px;
+			top : -50px;
+			vertical-align: middle;
+		}
+		.flat_3 .content{
+			width : 120px;
+			height : 120px;
+			position:absolute;
+			left : -60px;
+			top : -60px;
+			color : #45b97c;
+			font-size: inherit;
+			font-weight: bold;
+			line-height: 120px;
+			-webkit-transform: rotate(45deg);
+		}
+		.flat_4{
+			border:2px solid  #45b97c;
+			width : 100px;
+			height : 75px;
+			position: relative;
+			border-radius: 4px;
+			line-height: 75px;
+		}
+		.flat_4:before{
+			content : "";
+			position: absolute;
+			right : 100% ;
+			top : 40%;
+			width: 0;
+  			height: 0;
+			border-top: 6px solid transparent;
+		    border-top: 6px solid transparent;
+  			border-right: 12px solid #45b97c;
+  			border-bottom: 6px solid transparent;
+		}
+		.flat_4 .content{
+			font-size: 18px;
+			color : #45b97c;
+		}
+		.flat_5{
+			font-family: iconfont;
+			font-size: 32px;
+			color : #FFF;
+			height: 32px;
+			line-height: 32px;
+			width : 70px;
+			text-align: left;
+			padding-left: 0px;
+			background-color: #45b97c;
+			border : 1px solid #45b97c;
+			border-radius: 16px;
+			outline: none;
+			transition: padding .5s,background-color .5s ,border .5s;
+			-webkit-transition: padding .5s,background-color .5s,border .5s;
+			text-shadow : rgba(0,0,0,0.5) 5px 5px 10px;
+		}
+		.flat_5:active{
+			padding-left: 37px;
+			border : 1px solid #CCC;
+			background-color: #CCC;
+		}
+		.flat_6{
+			width : 0px;
+			height :0px;
+			border : 50px solid transparent;
+			border-top : 50px solid #45b97c;
+			border-top-left-radius: 50px;
+			border-top-right-radius: 50px;
+			position: relative;
+		}
+		.flat_6_2{
+			width : 0px;
+			height :0px;
+			border : 40px solid transparent;
+			border-top : 40px solid #FFF;
+			border-top-left-radius: 40px;
+			border-top-right-radius: 40px;
+			position: absolute;
+			left : -40px;
+			top : -40px;
+		}
+		.flat_6_3{
+			width : 0px;
+			height :0px;
+			border : 30px solid transparent;
+			border-top : 30px solid #45b97c;
+			border-top-left-radius: 30px;
+			border-top-right-radius: 30px;
+			position: absolute;
+			left : -30px;
+			top : -30px;
+		}
+		.flat_6_4{
+			width : 0px;
+			height :0px;
+			border : 20px solid transparent;
+			border-top : 20px solid #FFF;
+			border-top-left-radius: 20px;
+			border-top-right-radius: 20px;
+			position: absolute;
+			left : -20px;
+			top : -20px;
+		}
+		.flat_6_5{
+			width : 0px;
+			height :0px;
+			border : 10px solid transparent;
+			border-top : 10px solid #45b97c;
+			border-top-left-radius: 10px;
+			border-top-right-radius: 10px;
+			position: absolute;
+			left : -10px;
+			top : -10px;
+		}
+		.flat_7{
+			width : 150px;
+			height: 150px;
+			border-radius: 5px;
+			background-color: rgba(184,184,184,.2);	
+			line-height: 150px;
+			position: relative;
+		}
+		.flat_7 .content{
+			font-size: 80px;
+			font-weight: bold;
+			color : rgba(173,255,47,1);
+			-webkit-mask-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,0)), to(rgba(0,0,0,1)),color-stop(.5,rgba(0,0,0,0)));  
+		}
+		.flat_7 .frame{
+			font-size: 80px;
+			color : rgba(184,184,184,.3);	
+			font-weight: bold;
+			position: absolute;
+			top : 0px;
+			left: 14px;
+		}
+		.flat_8{
+			width : 190px;
+			height : 190px;
+			position: relative;
+		}
+		.flat_8 .mask{
+			height : 60px;
+			width : 180px;
+			border-left: 5px solid #FFF;
+			border-right: 5px solid #FFF;
+			z-index: 2;
+		}
+		.flat_8 .bkg1{
+			border-top-left-radius: 5px;
+			border-top-right-radius: 5px;
+			background-image: url(images/bkg1.jpg);
+			background-size: 100%;
+			background-origin: content-box;
+			border-top: 5px solid #FFF;
+			position: absolute;
+			top : 0px;
+		}
+		.flat_8:hover .bkg1{
+			-webkit-animation: bkg1 1s;
+			-webkit-animation-fill-mode : forwards;
+			-webkit-transition-timing-function :linear;
+		}
+		.flat_8 .bkg2{
+			background-image: url(images/bkg1.jpg);
+			background-position: 0px 120px;
+			background-size: 100%;
+			background-origin: content-box;
+			position: absolute;
+			top : 65px;
+		}
+		.flat_8:hover .bkg2{
+			-webkit-animation: bkg2 1s;
+			-webkit-animation-fill-mode : forwards;
+			-webkit-transition-timing-function :linear;
+		}
+		.flat_8 .bkg3{
+			background-image: url(images/bkg1.jpg);
+			background-position: 0px 60px;
+			background-size: 100%;
+			background-origin: content-box;
+			border-bottom: 5px solid #FFF;
+			border-bottom-left-radius: 5px;
+			border-bottom-right-radius: 5px;
+			position: absolute;
+			top : 125px;
+		}
+		.flat_8:hover .bkg3{
+			-webkit-animation: bkg3 1s;
+			-webkit-animation-fill-mode : forwards;
+			-webkit-transition-timing-function :ease-out;
+		}
+		@-webkit-keyframes bkg1{
+			from{
+				-webkit-transform-origin: bottom;
+				-webkit-transform: perspective(600px);
+			}
+			to{
+				-webkit-transform-origin: bottom;
+				-webkit-transform: perspective(600px) rotateX(43deg);
+			}
+		}
+		@-webkit-keyframes bkg2{
+			from{
+				-webkit-transform-origin: top;
+				-webkit-transform : perspective(600px);
+			}
+			to{
+				-webkit-transform-origin: top;
+				-webkit-transform : perspective(600px) rotateX(-45deg);
+			}
+		}
+		@-webkit-keyframes bkg3{
+			from{
+				-webkit-transform-origin: bottom;
+				-webkit-transform : perspective(600px);
+			}
+			to{
+				top : 85px;
+				-webkit-transform-origin: bottom;
+				-webkit-transform : perspective(600px) rotateX(40deg);
+			}
+		}
+		.flat_8 .button-list{
+			height : 34px;
+			width : 180px;
+			border-left: 5px solid rgba(200,200,200,.5);
+			border-right: 5px solid rgba(200,200,200,.5);
+			position: absolute;
+			top : 145px;
+			background-color: rgba(200,200,200,.5);
+			border-bottom: 5px solid rgba(200,200,200,.5);
+			border-bottom-left-radius: 5px;
+			border-bottom-right-radius: 5px;
+		}
+	</style>
+</head>
+<body>
+	<article>
+		<section>
+			<button class="flat_1 green" >按钮</button>
+		</section>
+		<section>
+			<button class="flat_1 green_inverted">按钮</button>
+		</section>
+		<section>
+			<button class="flat_2 green" >&#13727</button>
+		</section>
+		<section>
+			<button class="flat_2 green" >&#13726</button>
+		</section>
+		<section>
+			<button class="flat_1 orange">按钮</button>
+		</section>
+		<section>
+			<div class="flat_3" style="margin : 30px auto;">
+				<div class="mask"></div>
+				<span class="content">69</span>
+			</div>
+		</section>
+		<section>
+			<div class="flat_4" style="margin : 50px auto;">
+				<span class="content">hehe</span>
+			</div>
+		</section>
+		<section>
+			<button class="flat_5">
+				&#13759
+			</button>
+		</section>
+		<section>
+			<div class="flat_6" style="margin : 50px auto;">
+				<div class="flat_6_2">
+					<div class="flat_6_3"><div class="flat_6_4"><div class="flat_6_5"></div></div></div>
+				</div>
+			</div>
+		</section>
+		<section>
+			<div class="flat_7" style="margin:40px auto;">
+				<span class="content">
+					97%
+				</span>
+				<div class="frame">
+					97%
+				</div>
+			</div>
+		</section>
+		<section>
+			<div class="flat_8"  style="margin:20px auto;">
+				<div class="mask bkg1"></div>
+				<div class="mask bkg2"></div>
+				<div class="mask bkg3"></div>
+				<div class="button-list"></div>
+			</div>
+		</section>
+	</article>
+</body>
+</html>
