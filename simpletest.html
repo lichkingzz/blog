@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh_cn">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width,user-scalable=no" />
+	<title>超简问答系统</title>
+	<link rel="stylesheet" type="text/css" href="stylesheets/normalize.css">
+	<link rel="stylesheet" type="text/css" href="stylesheets/scene.css">
+	<style>
+		html{
+			height:100%;
+			background-color: rgb(119, 254, 213);
+		}
+		body{
+			height:100%;
+		}
+		#inputFrame{
+			height:100%;
+			width:100%;
+		}
+		#ruleInput{
+			width: 90%;
+			height: 65%;
+			border: 1px solid #ccc;
+			position: absolute;
+			left: 5%;
+			top: 5%;
+			display: block;
+			padding: 5px;
+			resize:none;
+			box-sizing: border-box;
+		}
+		footer{
+			height:30%;
+			width:100%;
+			position: fixed;
+			bottom:0;
+		}
+		#confirmRule{
+			width : 50%;
+			font-size: 18px;
+			height: 32px;
+			line-height: 24px;
+			position: absolute;
+			top : 20px;
+			left: 25%;
+			cursor: pointer;
+		}
+		.scene{
+			width: 80%;
+			position: absolute;
+			top: 50px;
+			left: 10%;
+		}
+		.scene .content{
+			width: 96%;
+			margin: 5px 2% 20px 2%;
+			height: 100px;
+			background-color: #fff;
+			border-radius: 4px;
+			padding: 5px 5px;
+			box-sizing: border-box;
+		}
+		.scene .answer{
+			margin-bottom: 20px;
+			text-align: left;
+			cursor: pointer;
+			background-color: #ffe16e;
+			border-radius: 5px;
+			height: 55px;
+			vertical-align: middle;
+			line-height: 55px;
+			padding-left: 40px;
+			position: relative;
+			box-shadow: 2px 2px 2px 0 rgba(0,0,0,.23);
+			color: #694123;
+		}
+		.scene .answer span{
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			width: 100%;
+			display: block;
+			height: 100%;
+		}
+
+		.scene .answer:before{
+			content: "";
+			width: 40px;
+			height: 40px;
+			display: block;
+			position: absolute;
+			background-color: #9940ff;
+			border-radius: 20px;
+			left: -20px;
+			top: 7px;
+			box-shadow: 2px 2px 2px 0 rgba(0,0,0,.23);
+		}
+		.scene .aid{
+			position: absolute;
+			left: -5px;
+			top: 15px;
+			height: 20px;
+			width: 20px;
+			line-height: 20px;
+			color: #fff;
+		}
+	</style>
+	<script src="javascripts/jquery-1.8.3.js"></script>
+	<script src="javascripts/jquery-1.8.3.js"></script>
+	<script src="javascripts/template.min.js"></script>
+	<script type="text/html" id="nodeTmpl">
+		<div class="content">
+			<[[=content]]>
+		</div>
+		<[[for(var i = 0, len = answers.length; i < len; i++){]]>
+		<div id="an_<[[=id]]>-<[[=answers[i].id]]>" <[[if(answers[i].next){]]>next="<[[=answers[i].next]]>"<[[}]]> class="answer">
+			<b class="aid"><[[=answers[i].id.toUpperCase()]]></b> <span><[[=answers[i].content]]></span>
+		</div>
+		<[[}]]>
+	</script>
+</head>
+<body>
+	<div id="inputFrame">
+		<textarea id="ruleInput" placeholder="请输入脚本"></textarea>
+		<footer>
+			<button id="confirmRule">开始</button>
+		</footer>
+	</div>
+</body>
+	<script type="text/javascript">
+		template.openTag = "<[[";
+		template.closeTag = "]]>";
+
+		function Node(id,content,answers){
+			this.id = id;
+			this.content = content;
+			this.answers = answers;
+		}
+
+		Node.prototype.create = function(){
+			var node = document.createElement('div');
+			var $node = $(node);
+			$node.addClass('scene');
+			$node.attr('node_' + this.id);
+			node.innerHTML =  template.render('nodeTmpl', this);
+			return node;
+		}
+
+		function Answer(id,content,nextNode){
+			this.id = id;
+			this.content = content;
+			this.nextNode = nextNode;
+		}
+
+		var nodeMap = {};
+		var firstNode;
+		function parseRule(rule){
+			var lines = rule.split('\n');
+			var line;
+			var currentNode;
+			var currentAnswers;
+			
+			for(var i = 0 ,len = lines.length ; i < len ; i ++){
+				line = lines[i];
+				if(!line){
+					continue;
+				}
+				if(line.indexOf('#') === 0){
+					var index = line.indexOf(' ');
+					var id = line.substring(1,index).trim();
+					var content = line.substring(index+1).trim();
+					currentNode = new Node(id,content);
+					currentNode.answers = [];
+					nodeMap[id] = currentNode;
+					currentAnswers = {};
+					if(!firstNode){
+						firstNode = currentNode;
+					}
+				}else if(line.indexOf('+')===0){
+					var index = line.indexOf(' ');
+					var answer = {};
+					answer.id = line.substring(1,index).trim();
+					answer.content = line.substring(index+1).trim();
+					currentAnswers[answer.id] = answer;
+					currentNode.answers.push(answer);
+				}else if(line.indexOf('.')===0){
+					var index = line.indexOf('->');
+					var aid = line.substring(1,index).trim();
+					var next = line.substring(index + 2).trim();
+					currentAnswers[aid].next = next;
+				}
+			}
+
+		}
+
+		function clear(){
+			$('#inputFrame').show();
+			$('.scene').remove();
+			nodeMap = {};
+			firstNode = null;
+		}
+
+		$(function(){
+
+			$('body').on('click','.answer',function(){
+				var $this = $(this);
+				var next = $this.attr('next');
+				if(next && nodeMap[next]){
+					$('.scene').remove();
+					$('body').append(nodeMap[next].create());
+				}else{
+					clear();
+					alert('完了！');
+				}
+			});
+
+			$('#confirmRule').click(function(){
+				var rule = $('#ruleInput').val();
+				parseRule(rule);
+				$('#inputFrame').hide();
+				$('body').append(firstNode.create());
+			});
+		});
+	</script>
+</html>

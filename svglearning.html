@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>SVG学习</title>
+	<style>
+		#hover_test:hover #text_path{
+			stroke-dasharray : 5;
+		}
+	</style>
+</head>
+<body>
+	<div style="width:960px;margin:0 auto;">
+		<a href="http://www.cnblogs.com/duanhuajian/archive/2013/07/31/3227410.html">来源文章</a>
+		<p>一个简单的图形</p>
+		<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="200px" height="200px">
+			<rect x="0" y="0" width="100%" height="100%"
+	          fill="none" stroke="black"/>
+	   		 <circle cx="100" cy="100" r="50"
+	            style="stroke: black; fill: red;"/>
+	     </svg>
+	     <p>一个扇形</p>
+	     <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="200px" height="200px">
+	     	<path d="M 100 0 
+	     			 L 100 100 
+	     			 L 200 100
+	     			 A 100 100 -270 1 1 100 0"
+	     			 stroke="gray" fill="none" stroke-width="1"/>
+
+	     </svg>
+	     <p>文字对齐贝叶斯曲线</p>
+	     <svg id="hover_test" xmlns="http://www.w3.org/2000/svg" version="1.1" width="600px" height="100px">
+	     	<path id="text_path" d="M 0 50 Q 150 0 300 50 T 600 50" stroke="black" fill="transparent"/>
+	     	<text>
+  				<textPath xlink:href="#text_path">床前明月光，疑是地上霜。举头望明月，低头思故乡。</textPath>
+			</text>
+	     </svg>
+	     <div style="position:relative;width:300px;height:300px;border:1px solid black;">
+	     	<p>模糊效果</p>
+		    <svg id="hover_test" xmlns="http://www.w3.org/2000/svg" version="1.1" width="200px" height="200px">
+		     	<defs>
+		     		<filter id="MyFilter" filterUnits="userSpaceOnUse" x="0" y="0" width="200" height="200">
+		     			  <feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>
+		     		</filter>
+		     	</defs>
+		     	<defs>
+    				<pattern id="Pattern" x=".05" y=".05" width=".25" height=".25">
+      					<rect x="0" y="0" width="25" height="25" fill="skyblue"/>
+      					<rect x="10" y="0" width="25" height="25" fill="red"/ fill-opacity="0.5">
+    				</pattern> 
+  				</defs>
+		     	<rect x="50" y="50" width="100" height="100" fill="url(#Pattern)"/>
+		    </svg>
+		    <div style="position:absolute;top:100px;left:20px">我是一段文字你能不能模糊我？？？</div>
+	     </div>
+	     
+     </div>
+</body>
+</html>
