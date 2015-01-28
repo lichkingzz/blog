@@ -13,6 +13,7 @@
 		}
 		body{
 			height:100%;
+			overflow-x:hidden;
 		}
 		#inputFrame{
 			height:100%;
@@ -51,6 +52,7 @@
 			position: absolute;
 			top: 50px;
 			left: 10%;
+			-webkit-transition: -webkit-transform 0.3s;
 		}
 		.scene .content{
 			width: 96%;
@@ -58,7 +60,7 @@
 			height: 100px;
 			background-color: #fff;
 			border-radius: 4px;
-			padding: 5px 5px;
+			padding: 15px 5px;
 			box-sizing: border-box;
 		}
 		.scene .answer{
@@ -105,11 +107,28 @@
 			line-height: 20px;
 			color: #fff;
 		}
+		.scene .title{
+			position: absolute;
+			height: 30px;
+			line-height: 30px;
+			top: -13px;
+			left: 37%;
+			color: #963200;
+			font-weight: bold;
+			background-color: rgb(252,200,0);
+			text-align: center;
+			border-radius: 15px;
+			padding: 0 20px;
+			box-shadow: 1px 4px 0px 0 #963200;
+		}
 	</style>
 	<script src="javascripts/jquery-1.8.3.js"></script>
 	<script src="javascripts/jquery-1.8.3.js"></script>
 	<script src="javascripts/template.min.js"></script>
 	<script type="text/html" id="nodeTmpl">
+		<div class="title">
+			第<[[=id]]>题
+		</div>
 		<div class="content">
 			<[[=content]]>
 		</div>
@@ -199,16 +218,35 @@
 			$('.scene').remove();
 			nodeMap = {};
 			firstNode = null;
+			moving = false;
 		}
 
 		$(function(){
-
+			var moving = false;
 			$('body').on('click','.answer',function(){
+				if(moving){
+					return;
+				}
 				var $this = $(this);
 				var next = $this.attr('next');
 				if(next && nodeMap[next]){
-					$('.scene').remove();
-					$('body').append(nodeMap[next].create());
+					var current = $('.scene')[0];
+					$(current).css({
+						'-webkit-transform' : 'translateX(-120%)'
+					});
+					var newNode = nodeMap[next].create();
+					setTimeout(function(){
+						$(current).remove();
+					},500);
+					$(newNode).css({
+						'-webkit-transform' : 'translateX(120%)'
+					});	
+					$('body').append(newNode);
+					setTimeout(function(){
+						$(newNode).css({
+						'-webkit-transform' : 'translateX(0%)'
+					});	
+					},100);
 				}else{
 					clear();
 					alert('完了！');
