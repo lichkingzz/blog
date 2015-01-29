@@ -70,7 +70,7 @@
 			cursor: pointer;
 			background-color: #ffe16e;
 			border-radius: 5px;
-			height: 55px;
+			min-height: 55px;
 			vertical-align: middle;
 			line-height: 55px;
 			padding-left: 40px;
@@ -79,12 +79,11 @@
 			color: #694123;
 		}
 		.scene .answer span{
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
-			width: 100%;
+			text-overflow: clip;
+			width: 96%;
 			display: block;
 			height: 100%;
+			line-height:25px;
 		}
 
 		.scene .answer:before{
@@ -181,7 +180,30 @@
 </head>
 <body>
 	<div id="inputFrame" style="">
-		<textarea id="ruleInput" placeholder="请输入脚本"></textarea>
+		<textarea id="ruleInput" placeholder="请输入脚本">
+#1 问题一的标题是我
++a 我是问题一的答案a，点我跳到问题二
+.a -> 2
++b 我是问题一的答案b，点我跳到问题三
+.b -> 3
+#2 我是问题二
++a 我是问题二的答案a，点我跳到结局二
+.a -> $2
++b 我是问题二的答案b，点我跳到结局一
+.b -> $1
+#3 我是问题三
++a 我是问题二的答案a，点我跳到结局一
+.a -> $1
++b 我是问题二的答案b，点我跳到结局二
+.b -> $2
+
+
+$1 我是结局一
++ 结局一的内容在这里
+
+$2 我是结局二
++ 结局二的内容在这里
+		</textarea>
 		<footer>
 			<button id="confirmRule">开始</button>
 		</footer>
