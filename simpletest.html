@@ -121,8 +121,38 @@
 			padding: 0 20px;
 			box-shadow: 1px 4px 0px 0 #963200;
 		}
+		.ending{
+			width: 80%;
+			position: absolute;
+			top: 50px;
+			left: 10%;
+			-webkit-transition: -webkit-transform 0.3s;
+		}
+		.ending .title{
+			background: #fff;
+			padding: 10px;
+			border-radius: 5px;
+			margin-bottom: 20px;
+			text-align: center;
+		}
+		.ending .content{
+			background: #fff;
+			padding: 10px;
+			border-radius: 5px;
+			margin-bottom: 20px;
+		}
+		#restart{
+			display: block;
+			margin: 0 auto;
+			color: rgb(139,95,31);
+			background: #ffd800;
+			padding: 5px 12px;
+			font-weight: bold;
+			border-radius: 20px;
+			height: 40px;
+			border: none;
+		}
 	</style>
-	<script src="javascripts/jquery-1.8.3.js"></script>
 	<script src="javascripts/jquery-1.8.3.js"></script>
 	<script src="javascripts/template.min.js"></script>
 	<script type="text/html" id="nodeTmpl">
@@ -138,14 +168,24 @@
 		</div>
 		<[[}]]>
 	</script>
+	<script type="text/html" id="endTmpl">
+		<div class="title">
+			<[[=title]]>
+		</div>
+		<div class="content">
+			<[[=content]]>
+		</div>
+		<button id="restart">重新开始</button>
+	</script>
 </head>
 <body>
-	<div id="inputFrame">
+	<div id="inputFrame" style="">
 		<textarea id="ruleInput" placeholder="请输入脚本"></textarea>
 		<footer>
 			<button id="confirmRule">开始</button>
 		</footer>
 	</div>
+
 </body>
 	<script type="text/javascript">
 		template.openTag = "<[[";
@@ -155,14 +195,21 @@
 			this.id = id;
 			this.content = content;
 			this.answers = answers;
+			this.title = '';
+			this.type;
 		}
 
 		Node.prototype.create = function(){
 			var node = document.createElement('div');
 			var $node = $(node);
-			$node.addClass('scene');
 			$node.attr('node_' + this.id);
-			node.innerHTML =  template.render('nodeTmpl', this);
+			if(this.type==='ending'){
+				$node.addClass('ending');
+				node.innerHTML =  template.render('endTmpl', this);
+			}else{
+				$node.addClass('scene');
+				node.innerHTML =  template.render('nodeTmpl', this);
+			}
 			return node;
 		}
 
@@ -197,17 +244,30 @@
 						firstNode = currentNode;
 					}
 				}else if(line.indexOf('+')===0){
-					var index = line.indexOf(' ');
-					var answer = {};
-					answer.id = line.substring(1,index).trim();
-					answer.content = line.substring(index+1).trim();
-					currentAnswers[answer.id] = answer;
-					currentNode.answers.push(answer);
+					if(currentNode.type === 'ending'){
+						var index = line.indexOf(' ');
+						currentNode.content = line.substring(index+1).trim();
+					}else{
+						var index = line.indexOf(' ');
+						var answer = {};
+						answer.id = line.substring(1,index).trim();
+						answer.content = line.substring(index+1).trim();
+						currentAnswers[answer.id] = answer;
+						currentNode.answers.push(answer);
+					}
 				}else if(line.indexOf('.')===0){
 					var index = line.indexOf('->');
 					var aid = line.substring(1,index).trim();
 					var next = line.substring(index + 2).trim();
 					currentAnswers[aid].next = next;
+				} else if(line.indexOf('$')===0){
+					var sep = line.indexOf(' ');
+					var eid = line.substring(0,sep).trim();
+					var title = line.substring(sep + 1).trim();
+					currentNode = new Node(id,'');
+					currentNode.type = 'ending';
+					currentNode.title = title;
+					nodeMap[eid] = currentNode;
 				}
 			}
 
@@ -216,6 +276,7 @@
 		function clear(){
 			$('#inputFrame').show();
 			$('.scene').remove();
+			$('.ending').remove();
 			nodeMap = {};
 			firstNode = null;
 			moving = false;
@@ -251,6 +312,9 @@
 					clear();
 					alert('完了！');
 				}
+			}).on('click','#restart',function(){
+				clear();
+				$('inputFrame').show();
 			});
 
 			$('#confirmRule').click(function(){
