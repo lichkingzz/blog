@@ -464,10 +464,6 @@ $2 我是结局二
 						'-webkit-transform' : 'translateX(0%)'
 					});	
 					},100);
-					if(nodeMap[next].type === 'ending'){
-						alert('setup share');
-						weixinShare();
-					}
 				}else{
 					clear();
 					alert('完了！');
@@ -485,56 +481,62 @@ $2 我是结局二
 			});
 		});
 
-		// 微信分享
-		function weixinShare(){
-			alert("准备分享");
-			if(!WeixinApi){
-				return;
-			}
-			// 定义微信分享的数据
-			var wxData = {
-			    "appId": "", // 服务号可以填写appId
-			    "imgUrl" : 'http://photocdn.sohu.com/20130122/Img364302298.jpg',
-			    "link" : 'http://www.woaibiancheng.com',
-			    "desc" : ending.content,
-			    "title" : playTitle
-			};
-
-
-			// 分享的回调
-			var wxCallbacks = {
-			    // 收藏操作是否触发回调，默认是开启的
-			    favorite : false,
-
-			    // 分享操作开始之前
-			    ready : function() {
-			        // 你可以在这里对分享的数据进行重组
-			        alert("准备分享");
-			    },
-			    // 分享被用户自动取消
-			    cancel : function(resp) {
-			        // 你可以在你的页面上给用户一个小Tip，为什么要取消呢？
-			        alert("分享被取消，msg=" + resp.err_msg);
-			    },
-			    // 分享失败了
-			    fail : function(resp) {
-			        // 分享失败了，是不是可以告诉用户：不要紧，可能是网络问题，一会儿再试试？
-			        alert("分享失败，msg=" + resp.err_msg);
-			    },
-			    // 分享成功
-			    confirm : function(resp) {
-			        // 分享成功了，我们是不是可以做一些分享统计呢？
-			        alert("分享成功，msg=" + resp.err_msg);
-			    },
-			    // 整个分享过程结束
-			    all : function(resp,shareTo) {
-			        // 如果你做的是一个鼓励用户进行分享的产品，在这里是不是可以给用户一些反馈了？
-			        alert("分享" + (shareTo ? "到" + shareTo : "") + "结束，msg=" + resp.err_msg);
-			    }
-			};
-			// 自定义分享到：微信好友、朋友圈、腾讯微博、QQ好友
-			WeixinApi.share(wxData,wxCallbacks);
-		}
+		            // 需要分享的内容，请放到ready里
+            WeixinApi.ready(function(Api) {
+                // 微信分享的数据
+                window.wxData = {
+                    "appId": "wx729bcc4f3ca39e87", // 服务号可以填写appId
+                    "imgUrl" : 'http://www.baidufe.com/fe/blog/static/img/weixin-qrcode-2.jpg',
+                    "link" : 'http://www.baidufe.com',
+                    "desc" : '!!！',
+                    "title" : "欢迎使用WeixinApi"
+                };
+                // 分享的回调
+                var wxCallbacks = {
+                    // 收藏操作是否触发回调，默认是开启的
+                    favorite : false,
+                    // 用async模式，表示每次分享之前，都需要更新分享内容
+                    async:true,
+                    // 分享操作开始之前
+                    ready : function() {
+                        // 你可以在这里对分享的数据进行动态修改：*可以只修改某些字段*
+                        alert("准备分享");
+                        // 下面我们只修改标题和图片地址
+                        this.dataLoaded({
+                            desc : ending.content,
+                            imgUrl : 'http://www.baidu.com/img/bdlogo.png'
+                        });
+                    },
+                    // 分享被用户自动取消
+                    cancel : function(resp) {
+                        // 你可以在你的页面上给用户一个小Tip，为什么要取消呢？
+                        alert("分享被取消，msg=" + resp.err_msg);
+                    },
+                    // 分享失败了
+                    fail : function(resp) {
+                        // 分享失败了，是不是可以告诉用户：不要紧，可能是网络问题，一会儿再试试？
+                        alert("分享失败，msg=" + resp.err_msg);
+                    },
+                    // 分享成功
+                    confirm : function(resp) {
+                        // 分享成功了，我们是不是可以做一些分享统计呢？
+                        alert("分享成功，msg=" + resp.err_msg);
+                    },
+                    // 整个分享过程结束
+                    all : function(resp,shareTo) {
+                        // 如果你做的是一个鼓励用户进行分享的产品，在这里是不是可以给用户一些反馈了？
+                        alert("分享" + (shareTo ? "到" + shareTo : "") + "结束，msg=" + resp.err_msg);
+                    }
+                };
+                // 用户点开右上角popup菜单后，点击分享给好友，会执行下面这个代码
+                Api.shareToFriend(wxData, wxCallbacks);
+                // 点击分享到朋友圈，会执行下面这个代码
+                Api.shareToTimeline(wxData, wxCallbacks);
+                // 点击分享到腾讯微博，会执行下面这个代码
+                Api.shareToWeibo(wxData, wxCallbacks);
+                // iOS上，可以直接调用这个API进行分享，一句话搞定
+                Api.generalShare(wxData,wxCallbacks);
+            });
 	</script>
 	<script>
 		var _hmt = _hmt || [];
