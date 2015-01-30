@@ -1,60 +1,445 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Blog by lichkingzz</title>
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="javascripts/jquery-1.8.3.js"></script>
-    <script src="javascripts/main.js"></script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<!DOCTYPE html>
+<html lang="zh_cn">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width,user-scalable=no" />
+	<title>超简问答系统</title>
+	<link rel="stylesheet" type="text/css" href="stylesheets/normalize.css">
+	<link rel="stylesheet" type="text/css" href="stylesheets/scene.css">
+	<style>
+		html{
+			height:100%;
+			-webkit-transition: background-color 3s;
+			background-color: rgb(119, 254, 213);
+		}
+		body{
+			height:100%;
+			overflow-x:hidden;
+		}
+		#inputFrame{
+			height:100%;
+			width:100%;
+		}
+		#ruleInput{
+			width: 90%;
+			height: 320px;
+			border: 1px solid #ccc;
+			position: absolute;
+			left: 5%;
+			top: 5%;
+			display: block;
+			padding: 5px;
+			resize:none;
+			box-sizing: border-box;
+		}
+		footer{
+			height: 200px;
+			width:100%;
+			position: fixed;
+			bottom:0;
+		}
+		#confirmRule{
+			width : 50%;
+			font-size: 18px;
+			height: 32px;
+			line-height: 24px;
+			position: absolute;
+			top : 20px;
+			left: 25%;
+			cursor: pointer;
+		}
+		.scene{
+			width: 80%;
+			position: absolute;
+			top: 50px;
+			left: 10%;
+			-webkit-transition: -webkit-transform 0.3s;
+		}
+		.scene .content{
+			width: 96%;
+			margin: 5px 2% 20px 2%;
+			height: 100px;
+			background-color: #fff;
+			border-radius: 4px;
+			padding: 15px 5px;
+			box-sizing: border-box;
+		}
+		.scene .answer{
+			margin-bottom: 20px;
+			text-align: left;
+			cursor: pointer;
+			background-color: #ffe16e;
+			border-radius: 5px;
+			min-height: 55px;
+			vertical-align: middle;
+			line-height: 55px;
+			padding-left: 40px;
+			position: relative;
+			box-shadow: 2px 2px 2px 0 rgba(0,0,0,.23);
+			color: #694123;
+		}
+		.scene .answer span{
+			text-overflow: clip;
+			width: 96%;
+			display: block;
+			height: 100%;
+			line-height:25px;
+		}
 
-  </head>
-  <body>
+		.scene .answer:before{
+			content: "";
+			width: 40px;
+			height: 40px;
+			display: block;
+			position: absolute;
+			background-color: #9940ff;
+			border-radius: 20px;
+			left: -20px;
+			top: 7px;
+			box-shadow: 2px 2px 2px 0 rgba(0,0,0,.23);
+		}
+		.scene .aid{
+			position: absolute;
+			left: -5px;
+			top: 15px;
+			height: 20px;
+			width: 20px;
+			line-height: 20px;
+			color: #fff;
+		}
+		.scene .title{
+			position: absolute;
+			height: 30px;
+			line-height: 30px;
+			top: -13px;
+			left: 37%;
+			color: #963200;
+			font-weight: bold;
+			background-color: rgb(252,200,0);
+			text-align: center;
+			border-radius: 15px;
+			padding: 0 20px;
+			box-shadow: 1px 4px 0px 0 #963200;
+		}
+		.ending{
+			width: 80%;
+			position: absolute;
+			top: 50px;
+			left: 10%;
+			-webkit-transition: -webkit-transform 0.3s;
+		}
+		.ending .title{
+			background: #fff;
+			padding: 10px;
+			border-radius: 5px;
+			margin-bottom: 20px;
+			text-align: center;
+		}
+		.ending .content{
+			background: #fff;
+			padding: 10px;
+			border-radius: 5px;
+			margin-bottom: 20px;
+		}
+		#restart{
+			display: block;
+			margin: 0 auto;
+			color: rgb(139,95,31);
+			background: #ffd800;
+			padding: 5px 12px;
+			font-weight: bold;
+			border-radius: 20px;
+			height: 40px;
+			border: none;
+		}
+		#newScore{
+			position: absolute;
+			top: 30px;
+			color: #fff;
+			font-size: 24px;
+			font-weight: bold;
+			left: 12%;
+			opacity: 1;			
+		}
+		#totalScore{
+			position: absolute;
+			right: 12%;
+			top: 7px;
+			color: #fff;
+			font-weight: bold;
+			text-align: right;
+			display: none;
+		}
+	</style>
+	<script src="javascripts/jquery-1.8.3.js"></script>
+	<script src="javascripts/template.min.js"></script>
+	<script type="text/html" id="nodeTmpl">
+		<div class="title">
+			第<[[=id]]>题
+		</div>
+		<div class="content">
+			<[[=content]]>
+		</div>
+		<[[for(var i = 0, len = answers.length; i < len; i++){]]>
+		<div id="an_<[[=id]]>-<[[=answers[i].id]]>" <[[if(answers[i].next){]]>next="<[[=answers[i].next]]>"<[[}]]>
+			<[[if(answers[i].score !== null && answers[i].score !== undefined){]]>score="<[[=answers[i].score]]>"<[[}]]>
+			class="answer">
+			<b class="aid"><[[=answers[i].id.toUpperCase()]]></b> <span><[[=answers[i].content]]></span>
+		</div>
+		<[[}]]>
+	</script>
+	<script type="text/html" id="endTmpl">
+		<div class="title">
+			<[[=title]]>
+		</div>
+		<div class="content">
+			<[[=content]]>
+		</div>
+		<button id="restart">重新开始</button>
+	</script>
+</head>
+<body>
+	<div id="newScore"></div>
+	<div id="totalScore"></div>
+	<div id="inputFrame" style="">
+		<textarea id="ruleInput" placeholder="请输入脚本">
+计分 0 分
 
-      <header>
-        <h1>火爆程序猿</h1>
-      </header>
+#1 问题一的标题是我
++a 我是问题一的答案a，点我跳到问题二
+!a 10
+.a -> 2
++b 我是问题一的答案b，点我跳到问题三
+.b -> 3
+#2 我是问题二
++a 我是问题二的答案a，点我跳到结局二
+.a -> $2
++b 我是问题二的答案b，点我跳到结局一
+.b -> $1
+#3 我是问题三
++a 我是问题二的答案a，点我跳到结局一
+.a -> $1
++b 我是问题二的答案b，点我跳到结局二
+.b -> $2
 
-      <div id="banner">
-        <span id="logo"></span>
 
-        <a href="https://github.com/lichkingzz/blog" class="button fork"><strong>View On GitHub</strong></a>
-        <div class="downloads">
-          <span>Downloads:</span>
-          <ul>
-            <li><a href="https://github.com/lichkingzz/blog/zipball/master" class="button">ZIP</a></li>
-            <li><a href="https://github.com/lichkingzz/blog/tarball/master" class="button">TAR</a></li>
-          </ul>
-        </div>
-      </div><!-- end banner -->
+$1 我是结局一
++ 结局一的内容在这里
 
-    <div id="wrapper" class="wrapper">
-      <nav>
-        <ul>
-          <li><a href="#css">css</a></li>
-          <li><a href="#js">javascript</a></li>
-        </ul>
-      </nav>
-      <section id="css">
-        <p>记录一些CSS3动画的灵感</p>
-         <p><a href="MyLightRoom.html">飘散的古诗</a></p>
-         <p><a href="etc.html">杂七杂八的效果</a></p>
-      </section>
-      <section id="js">
-        <p>一些通用的javascript工具代码</p>
-         <a href="moduleNavigator.html">模块切换器</a>
-      </section>
-      <footer>
-        <p>Project maintained by <a href="https://github.com/lichkingzz">lichkingzz</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></small></p>
-      </footer>
-    </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-    
-  </body>
+$2 我是结局二
++ 结局二的内容在这里
+		</textarea>
+		<footer>
+			<button id="confirmRule">开始</button>
+		</footer>
+	</div>
+
+</body>
+	<script type="text/javascript">
+		template.openTag = "<[[";
+		template.closeTag = "]]>";
+
+		function Node(id,content,answers){
+			this.id = id;
+			this.content = content;
+			this.answers = answers;
+			this.title = '';
+			this.type;
+			this.score = 0;
+		}
+
+		Node.prototype.create = function(){
+			var node = document.createElement('div');
+			var $node = $(node);
+			$node.attr('node_' + this.id);
+			if(this.type==='ending'){
+				$node.addClass('ending');
+				node.innerHTML =  template.render('endTmpl', this);
+			}else{
+				$node.addClass('scene');
+				node.innerHTML =  template.render('nodeTmpl', this);
+			}
+			return node;
+		}
+
+		function Answer(id,content,nextNode){
+			this.id = id;
+			this.content = content;
+			this.nextNode = nextNode;
+		}
+
+		// 节点和变量
+		var nodeMap = {};
+		var firstNode;
+		var score;
+		var unit;
+		var needScore = false;
+
+		function parseRule(rule){
+			var lines = rule.split('\n');
+			var line;
+			var currentNode;
+			var currentAnswers;
+			
+			for(var i = 0 ,len = lines.length ; i < len ; i ++){
+				line = lines[i];
+				if(!line){
+					continue;
+				}
+				if(line.indexOf('#') === 0){
+					var index = line.indexOf(' ');
+					var id = line.substring(1,index).trim();
+					var content = line.substring(index+1).trim();
+					currentNode = new Node(id,content);
+					currentNode.answers = [];
+					nodeMap[id] = currentNode;
+					currentAnswers = {};
+					if(!firstNode){
+						firstNode = currentNode;
+					}
+				}else if(line.indexOf('+')===0){
+					if(currentNode.type === 'ending'){
+						var index = line.indexOf(' ');
+						currentNode.content = line.substring(index+1).trim();
+					}else{
+						var index = line.indexOf(' ');
+						var answer = {};
+						answer.id = line.substring(1,index).trim();
+						answer.content = line.substring(index+1).trim();
+						currentAnswers[answer.id] = answer;
+						currentNode.answers.push(answer);
+					}
+				}else if(line.indexOf('.')===0){
+					var index = line.indexOf('->');
+					var aid = line.substring(1,index).trim();
+					var next = line.substring(index + 2).trim();
+					currentAnswers[aid].next = next;
+				}else if(line.indexOf('$')===0){
+					var sep = line.indexOf(' ');
+					var eid = line.substring(0,sep).trim();
+					var title = line.substring(sep + 1).trim();
+					currentNode = new Node(id,'');
+					currentNode.type = 'ending';
+					currentNode.title = title;
+					nodeMap[eid] = currentNode;
+				}else if(line.indexOf('计分')===0){
+					var sparts = line.split(/\s+/);
+					score = parseInt(sparts[1],10);
+					unit = sparts[2].trim();
+					needScore = true;
+				}else if(line.indexOf('!')===0){
+					var sindex = line.indexOf(' ');
+					var aid = line.substring(1,sindex).trim();
+					var sc = line.substring(sindex + 1).trim();
+					currentAnswers[aid].score = parseInt(sc,10);
+				}
+			}
+
+		}
+
+		function clear(){
+			$('#inputFrame').show();
+			$('.scene').remove();
+			$('.ending').remove();
+			nodeMap = {};
+			firstNode = null;
+			moving = false;
+			score = null;
+			needScore = false;
+			unit  = null;
+		}
+
+		function showScore(score){
+			$('#newScore').css({
+				top : '30px',
+				opacity : 1,
+				'-webkit-transition': 'none'
+			}).text(score > 0 ? '+' + score + unit: score + unit);
+			setTimeout(function(){
+				$('#newScore').css({
+					top : '15px',
+					opacity : 0,
+				'-webkit-transition': 'top 0.5s,opacity 0.5s'
+				});	
+			},500);
+		}
+
+		function changeTotal(){
+			$('#totalScore').text('总分：' + score + unit);
+		}
+
+		$(function(){
+
+			setInterval(function(){
+				var red = Math.floor(Math.random() * 150);
+				var green = Math.floor(Math.random() * 150);
+				var blue = Math.floor(Math.random() * 150);
+				$('html').css({
+					'background-color' : 'rgb(' + red + ',' + green + ',' + blue + ')'
+				});
+			},5000);
+
+			var moving = false;
+			$('body').on('click','.answer',function(){
+				if(moving){
+					return;
+				}
+				var $this = $(this);
+				var next = $this.attr('next');
+				var ascore = $this.attr('score');
+
+				if(needScore){
+					$('#totalScore').show();
+				}
+
+				if(needScore && ascore !== null  && ascore !== undefined){
+					showScore(ascore);
+					score += parseInt(ascore,10);
+					changeTotal();
+				}
+				if(next && nodeMap[next]){
+					var current = $('.scene')[0];
+					$(current).css({
+						'-webkit-transform' : 'translateX(-120%)'
+					});
+					var newNode = nodeMap[next].create();
+					setTimeout(function(){
+						$(current).remove();
+					},500);
+					$(newNode).css({
+						'-webkit-transform' : 'translateX(120%)'
+					});	
+					$('body').append(newNode);
+					setTimeout(function(){
+						$(newNode).css({
+						'-webkit-transform' : 'translateX(0%)'
+					});	
+					},100);
+				}else{
+					clear();
+					alert('完了！');
+				}
+			}).on('click','#restart',function(){
+				clear();
+				$('inputFrame').show();
+			});
+
+			$('#confirmRule').click(function(){
+				var rule = $('#ruleInput').val();
+				parseRule(rule);
+				$('#inputFrame').hide();
+				$('body').append(firstNode.create());
+			});
+		});
+	</script>
+	<script>
+		var _hmt = _hmt || [];
+		(function() {
+		  var hm = document.createElement("script");
+		  hm.src = "//hm.baidu.com/hm.js?89513f8ae4f60b169b2d27d4faf879a0";
+		  var s = document.getElementsByTagName("script")[0]; 
+		  s.parentNode.insertBefore(hm, s);
+		})();
+	</script>
+
 </html>
