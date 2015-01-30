@@ -475,8 +475,18 @@ $2 我是结局二
 		});
 	</script>
 	<script>
-		for(var key in WeixinJSBridge){
-			$('#msg').text(key);
+		var keys;
+		WeixinJSBridge = {
+			1 : '2',
+			2 : '3',
+			3 : '4'
+		};
+		if(WeixinJSBridge){
+			keys = '';
+			for(var key in WeixinJSBridge){
+				keys += key + "|";
+			}
+			$('#msg').text(keys);	
 		}
 	</script>
 	<script>
