@@ -153,6 +153,18 @@
 			border-radius: 20px;
 			height: 40px;
 			border: none;
+			margin-bottom: 10px;
+		}
+		#share{
+			display: block;
+			margin: 0 auto;
+			color: rgb(255, 255, 255);
+			background: #00F5FF;
+			padding: 5px 12px;
+			font-weight: bold;
+			border-radius: 20px;
+			height: 40px;
+			border: none;
 		}
 		#newScore{
 			position: absolute;
@@ -171,6 +183,18 @@
 			font-weight: bold;
 			text-align: right;
 			display: none;
+		}
+		#mask{
+			width: 100%;
+			height: 100%;
+			z-index: 19;
+			background-color: rgba(0,0,0,.6);
+			position: absolute;
+			display: none;
+		}
+		#mask img{
+			display: block;
+			margin: 20px auto;
 		}
 	</style>
 	<script src="javascripts/jquery-1.8.3.js"></script>
@@ -199,9 +223,13 @@
 			<[[=content]]>
 		</div>
 		<button id="restart">重新开始</button>
+		<button id="share">分享给好友</button>
 	</script>
 </head>
 <body>
+	<div id="mask">
+		<img src="images/sharelogo.png">
+	</div>
 	<div id="newScore"></div>
 	<div id="totalScore"></div>
 	<div id="inputFrame" style="">
@@ -471,6 +499,10 @@ $2 我是结局二
 			}).on('click','#restart',function(){
 				clear();
 				$('inputFrame').show();
+			}).on('click','#mask',function(){
+				$(this).hide();
+			}).on('click','#share',function(){
+				$('#mask').show();
 			});
 
 			$('#confirmRule').click(function(){
@@ -486,8 +518,8 @@ $2 我是结局二
                 // 微信分享的数据
                 window.wxData = {
                     "appId": "wx729bcc4f3ca39e87", // 服务号可以填写appId
-                    "imgUrl" : 'http://www.baidufe.com/fe/blog/static/img/weixin-qrcode-2.jpg',
-                    "link" : 'http://www.baidufe.com',
+                    "imgUrl" : 'http://www.woaibiancheng.com/images/logo.png',
+                    "link" : 'http://www.woaibiancheng.com',
                     "desc" : '!!！',
                     "title" : "欢迎使用WeixinApi"
                 };
@@ -499,33 +531,26 @@ $2 我是结局二
                     async:true,
                     // 分享操作开始之前
                     ready : function() {
-                        // 你可以在这里对分享的数据进行动态修改：*可以只修改某些字段*
-                        alert("准备分享");
                         // 下面我们只修改标题和图片地址
                         this.dataLoaded({
-                            desc : ending.content,
-                            imgUrl : 'http://www.baidu.com/img/bdlogo.png'
+                            desc : ending.content
                         });
                     },
                     // 分享被用户自动取消
                     cancel : function(resp) {
-                        // 你可以在你的页面上给用户一个小Tip，为什么要取消呢？
-                        alert("分享被取消，msg=" + resp.err_msg);
+                       
                     },
                     // 分享失败了
                     fail : function(resp) {
-                        // 分享失败了，是不是可以告诉用户：不要紧，可能是网络问题，一会儿再试试？
-                        alert("分享失败，msg=" + resp.err_msg);
+                       
                     },
                     // 分享成功
                     confirm : function(resp) {
-                        // 分享成功了，我们是不是可以做一些分享统计呢？
-                        alert("分享成功，msg=" + resp.err_msg);
+                        
                     },
                     // 整个分享过程结束
                     all : function(resp,shareTo) {
-                        // 如果你做的是一个鼓励用户进行分享的产品，在这里是不是可以给用户一些反馈了？
-                        alert("分享" + (shareTo ? "到" + shareTo : "") + "结束，msg=" + resp.err_msg);
+                        
                     }
                 };
                 // 用户点开右上角popup菜单后，点击分享给好友，会执行下面这个代码
