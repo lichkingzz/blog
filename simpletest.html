@@ -152,6 +152,24 @@
 			height: 40px;
 			border: none;
 		}
+		#newScore{
+			position: absolute;
+			top: 30px;
+			color: #fff;
+			font-size: 24px;
+			font-weight: bold;
+			left: 12%;
+			opacity: 1;			
+		}
+		#totalScore{
+			position: absolute;
+			right: 12%;
+			top: 7px;
+			color: #fff;
+			font-weight: bold;
+			text-align: right;
+			display: none;
+		}
 	</style>
 	<script src="javascripts/jquery-1.8.3.js"></script>
 	<script src="javascripts/template.min.js"></script>
@@ -163,7 +181,9 @@
 			<[[=content]]>
 		</div>
 		<[[for(var i = 0, len = answers.length; i < len; i++){]]>
-		<div id="an_<[[=id]]>-<[[=answers[i].id]]>" <[[if(answers[i].next){]]>next="<[[=answers[i].next]]>"<[[}]]> class="answer">
+		<div id="an_<[[=id]]>-<[[=answers[i].id]]>" <[[if(answers[i].next){]]>next="<[[=answers[i].next]]>"<[[}]]>
+			<[[if(answers[i].score !== null && answers[i].score !== undefined){]]>score="<[[=answers[i].score]]>"<[[}]]>
+			class="answer">
 			<b class="aid"><[[=answers[i].id.toUpperCase()]]></b> <span><[[=answers[i].content]]></span>
 		</div>
 		<[[}]]>
@@ -179,10 +199,15 @@
 	</script>
 </head>
 <body>
+	<div id="newScore"></div>
+	<div id="totalScore"></div>
 	<div id="inputFrame" style="">
 		<textarea id="ruleInput" placeholder="请输入脚本">
+计分 0 分
+
 #1 问题一的标题是我
 +a 我是问题一的答案a，点我跳到问题二
+!a 10
 .a -> 2
 +b 我是问题一的答案b，点我跳到问题三
 .b -> 3
@@ -220,6 +245,7 @@ $2 我是结局二
 			this.answers = answers;
 			this.title = '';
 			this.type;
+			this.score = 0;
 		}
 
 		Node.prototype.create = function(){
@@ -242,8 +268,13 @@ $2 我是结局二
 			this.nextNode = nextNode;
 		}
 
+		// 节点和变量
 		var nodeMap = {};
 		var firstNode;
+		var score;
+		var unit;
+		var needScore = false;
+
 		function parseRule(rule){
 			var lines = rule.split('\n');
 			var line;
@@ -283,7 +314,7 @@ $2 我是结局二
 					var aid = line.substring(1,index).trim();
 					var next = line.substring(index + 2).trim();
 					currentAnswers[aid].next = next;
-				} else if(line.indexOf('$')===0){
+				}else if(line.indexOf('$')===0){
 					var sep = line.indexOf(' ');
 					var eid = line.substring(0,sep).trim();
 					var title = line.substring(sep + 1).trim();
@@ -291,6 +322,16 @@ $2 我是结局二
 					currentNode.type = 'ending';
 					currentNode.title = title;
 					nodeMap[eid] = currentNode;
+				}else if(line.indexOf('计分')===0){
+					var sparts = line.split(/\s+/);
+					score = parseInt(sparts[1],10);
+					unit = sparts[2].trim();
+					needScore = true;
+				}else if(line.indexOf('!')===0){
+					var sindex = line.indexOf(' ');
+					var aid = line.substring(1,sindex).trim();
+					var sc = line.substring(sindex + 1).trim();
+					currentAnswers[aid].score = parseInt(sc,10);
 				}
 			}
 
@@ -303,6 +344,28 @@ $2 我是结局二
 			nodeMap = {};
 			firstNode = null;
 			moving = false;
+			score = null;
+			needScore = false;
+			unit  = null;
+		}
+
+		function showScore(score){
+			$('#newScore').css({
+				top : '30px',
+				opacity : 1,
+				'-webkit-transition': 'none'
+			}).text(score > 0 ? '+' + score + unit: score + unit);
+			setTimeout(function(){
+				$('#newScore').css({
+					top : '15px',
+					opacity : 0,
+				'-webkit-transition': 'top 0.5s,opacity 0.5s'
+				});	
+			},500);
+		}
+
+		function changeTotal(){
+			$('#totalScore').text('总分：' + score + unit);
 		}
 
 		$(function(){
@@ -323,6 +386,17 @@ $2 我是结局二
 				}
 				var $this = $(this);
 				var next = $this.attr('next');
+				var ascore = $this.attr('score');
+
+				if(needScore){
+					$('#totalScore').show();
+				}
+
+				if(needScore && ascore !== null  && ascore !== undefined){
+					showScore(ascore);
+					score += parseInt(ascore,10);
+					changeTotal();
+				}
 				if(next && nodeMap[next]){
 					var current = $('.scene')[0];
 					$(current).css({
@@ -358,4 +432,14 @@ $2 我是结局二
 			});
 		});
 	</script>
+	<script>
+		var _hmt = _hmt || [];
+		(function() {
+		  var hm = document.createElement("script");
+		  hm.src = "//hm.baidu.com/hm.js?89513f8ae4f60b169b2d27d4faf879a0";
+		  var s = document.getElementsByTagName("script")[0]; 
+		  s.parentNode.insertBefore(hm, s);
+		})();
+	</script>
+
 </html>
