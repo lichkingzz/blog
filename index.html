@@ -487,6 +487,7 @@ $2 我是结局二
 
 		// 微信分享
 		function weixinShare(){
+			alert("准备分享");
 			if(!WeixinApi){
 				return;
 			}
@@ -498,7 +499,7 @@ $2 我是结局二
 			    "desc" : ending.content,
 			    "title" : playTitle
 			};
-			alert("准备分享");
+
 
 			// 分享的回调
 			var wxCallbacks = {
