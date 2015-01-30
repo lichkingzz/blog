@@ -210,21 +210,28 @@
 !a 10
 .a -> 2
 +b 我是问题一的答案b，点我跳到问题三
+!b 20
 .b -> 3
 #2 我是问题二
 +a 我是问题二的答案a，点我跳到结局二
+!a 5
 .a -> $2
 +b 我是问题二的答案b，点我跳到结局一
+!b 10
 .b -> $1
 #3 我是问题三
 +a 我是问题二的答案a，点我跳到结局一
+!a 9
 .a -> $1
 +b 我是问题二的答案b，点我跳到结局二
+!b 10
 .b -> $2
 
 
 $1 我是结局一
-+ 结局一的内容在这里
++0  不及格啊   
++10 恭喜你及格了
++20 你好牛逼
 
 $2 我是结局二
 + 结局二的内容在这里
@@ -243,6 +250,7 @@ $2 我是结局二
 			this.id = id;
 			this.content = content;
 			this.answers = answers;
+			this.levels;
 			this.title = '';
 			this.type;
 			this.score = 0;
@@ -254,6 +262,23 @@ $2 我是结局二
 			$node.attr('node_' + this.id);
 			if(this.type==='ending'){
 				$node.addClass('ending');
+				if(this.levels){
+					// 计算分数
+					var levels = this.levels.sort(function(a,b){
+						var alevel = parseInt(a.level,10);
+						var blevel = parseInt(b.level,10);
+						return alevel < blevel;
+					});
+					for(var i =0 ,len = levels.length ; i < len ; i++){
+						if(parseInt(levels[i].level,10) <= score){
+							this.content = levels[i].content;
+							ending = levels[i];
+							break;
+						}
+					}
+				}else{
+					ending = this;
+				}
 				node.innerHTML =  template.render('endTmpl', this);
 			}else{
 				$node.addClass('scene');
@@ -274,6 +299,7 @@ $2 我是结局二
 		var score;
 		var unit;
 		var needScore = false;
+		var ending;
 
 		function parseRule(rule){
 			var lines = rule.split('\n');
@@ -300,7 +326,21 @@ $2 我是结局二
 				}else if(line.indexOf('+')===0){
 					if(currentNode.type === 'ending'){
 						var index = line.indexOf(' ');
-						currentNode.content = line.substring(index+1).trim();
+						var level = line.substring(0,index).trim();
+						if(level === '+'){
+							// 普通结局
+							currentNode.content = line.substring(index+1).trim();
+						}else{
+							// 分数
+							level = level.substring(1);
+							if(!currentNode.levels){
+								currentNode.levels = [];
+							}
+							currentNode.levels.push({
+								level : level,
+								content : line.substring(index+1).trim()
+							});
+						}
 					}else{
 						var index = line.indexOf(' ');
 						var answer = {};
@@ -341,6 +381,7 @@ $2 我是结局二
 			$('#inputFrame').show();
 			$('.scene').remove();
 			$('.ending').remove();
+			$('#totalScore').hide().text('');
 			nodeMap = {};
 			firstNode = null;
 			moving = false;
@@ -429,6 +470,19 @@ $2 我是结局二
 				parseRule(rule);
 				$('#inputFrame').hide();
 				$('body').append(firstNode.create());
+			});
+
+			WeixinApi.ready(function(Api){
+			    // 隐藏右上角popup菜单入口
+			    Api.hideOptionMenu();
+			 
+			    // 隐藏浏览器下方的工具栏
+			    Api.hideToolbar();
+			 
+			    // 获取网络状态
+			    Api.getNetworkType(function(network){
+			        // 拿到 network 以后，做任何你想做的事
+			    });
 			});
 		});
 	</script>
